@@ -1,0 +1,2 @@
+# Moment_homework
+数据库系统课程作业，基于Django框架与Opengauss数据库实现了一个包含用户、好友与动态发布功能的demo网页应用，目前只能在本地部署运行。
