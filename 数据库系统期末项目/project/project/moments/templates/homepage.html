@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block navbar %}{% endblock %}
+{% block content %}
+    <img style="z-index:-1; position: absolute; top:0; left:0; bottom:0; right:0; width:100%; height: 100%" class="img-responsive" src="/static/image/EU_6.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5 col-md-offset-1">
+                <h1 style="color:white; margin-top:25vh; font-size:38px">Welcome to WeChat</h1>
+                <p style="color:white; font-size:21px"> Connect with your friends — and other fascinating people. Get in-the-moment updates on the things that interest you. And watch events unfold, in real time, from every angle.</p>
+            </div>
+            <div class="col-md-4 col-md-offset-1">
+                <form style="background-color:white; margin-top:25vh; padding:2vh" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">                    
+                        <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Enter username" name="username">
+                    </div>
+                    <table style="width:100%">
+                        <tr>
+                            <td>
+                                <div>
+                                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" name="password">
+                                </div>
+                            </td>
+                            <td>
+                                <button style="float:right" type="submit" class="btn btn-info">Log in</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+                <form style="background-color:white; margin-top:2vh; padding:2vh 2vh 8vh 2vh">
+                    <p style="font-size:16px"><strong>New to WeChat?</strong> Sign up</p>
+                    <div class="form-group">                    
+                        <input type="text" class="form-control" id="username" placeholder="Full name">
+                    </div>
+                    <div class="form-group">                    
+                        <input type="email" class="form-control" id="email" placeholder="Email">
+                    </div>
+                    <div class="form-group">                    
+                        <input type="password" class="form-control" id="password" placeholder="Password">
+                    </div>
+                    <a style="float:right" id="register_submit" class="btn btn-warning">Sign up for WeChat</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 前台传值方法
+        function register_user(){
+            $.ajax({
+                type: "post",  // 传值方式
+                url: "/register_user",  //请求链接
+                data: {
+                    "username": $("#username").val(),
+                    "email": $("#email").val(),
+                    "password": $("#password").val(),
+                    "csrfmiddlewaretoken": $("input[name='csrfmiddlewaretoken']").val(),
+                },
+                success: function (response) {
+                    alert(response['message'])
+                    location.reload()
+                    // 成功后的回调方法
+                }
+            })
+        }
+
+        $("#register_submit").click(function (){
+            register_user()//按下按钮后跳转路径后执行的函数
+        })
+    </script>
+{% endblock %}

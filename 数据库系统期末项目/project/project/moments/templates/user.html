@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{#↑继承关系#}
+{% block title %}User{% endblock %}
+{% block user %}class="active"{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <!---头像、用户名、邮箱-->
+        <div class="row">
+            <div class="col-md-2">
+                <img id="pic" src="/static/image/{% if user.pic %}{{ user.pic }}{% else %}kungfupanda.jpg{% endif %}" class="info img-responsive img-thumbnail">
+            </div>
+            <div class="col-md-10">
+                <h1 id="username" style="font-size:70px">{{ user }}</h1>
+                <p id="email" class="info" style="font-size:50px">Email: {{ user.user.email }}</p>
+            </div>
+        </div>
+        <!---地区-->
+        <div class="row" style="margin-top:62px">
+            <div class="col-md-4">
+                <p style="font-size:50px">Region</p>
+            </div>
+            <div class="col-md-8">
+                <p id="region" class="info" style="font-size:50px;color:gray">{{user.region}}</p>
+            </div>
+        </div>
+        <hr>
+        <!---签名--->
+        <div class="row">
+            <div class="col-md-4">
+                <p style="font-size:50px">motto</p>
+            </div>
+            <div class="col-md-8">
+                <p id="motto" class="info" style="font-size:50px;color:gray">{{user.motto}}</p>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-4">
+                <p style="font-size:50px">Album</p>
+            </div>
+            <div class="col-md-8">
+                <img src="/static/image/messi.jpg" style="width:188px">
+            </div>
+        </div>        
+        <hr>
+    </div>
+    <script>
+        // 前台传值方法
+        function update_user(){
+            $.ajax({
+                type: "post",  // 传值方式
+                url: "/update_user",  //请求链接
+                data: {
+                    "pic": $("#pic").val(),
+                    "email": $("#email").val(),
+                    "region": $("#region").val(),
+                    "motto": $("#motto").val(),
+                    // 默认传输方式
+                    "csrfmiddlewaretoken": "{{ csrf_token }}",
+                },
+                success: function (response) {
+                    alert(response['message'])
+                    location.reload()
+                    // 成功后的回调方法
+                }
+            })
+        }
+
+        $(".info").click(function (){
+            $("#email").replaceWith("<input id='email' style='font-size:50px' value='"+ $("#email").html().split(':')[1].trim() +"' >")
+            $("#pic").replaceWith("<input id='pic' value='"+ $("#pic").html() +"' >")
+            $("#region").replaceWith("<input id='region' style='font-size:50px;color:gray' value='"+ $("#region").html() +"' >")
+            $("#motto").replaceWith("<input id='motto' style='font-size:50px;color:gray' value='"+ $("#motto").html() +"' >")
+            $("#username").click(function (){
+                update_user()
+            })
+            //按下按钮后跳转路径后执行的函数
+        })
+    </script>
+{% endblock %}

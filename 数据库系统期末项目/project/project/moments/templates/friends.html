@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}好友列表{% endblock %}
+{% block friends %}class="active"{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            {% for friend in friends_list %}
+            <div class="col-md-2">
+                <img id="pic" src="/static/image/{% if friend.pic %}{{ friend.pic }}{% else %}kungfupanda.jpg{% endif %}" class="info img-responsive img-thumbnail">
+            </div>
+            <div class="col-md-10">
+                <h1 id="username" style="font-size:70px">{{ friend }}</h1>
+                <p id="email" class="info" style="font-size:50px">Email: {{ friend.user.email }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        <hr>
+    </div>
+{% endblock %}

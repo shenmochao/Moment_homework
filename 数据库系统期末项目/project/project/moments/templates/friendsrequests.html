@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}好友请求{% endblock %}
+{% block Friendsrequests %}class="active"{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% for request_info in friend_requests %}
+            <div class="row" id="friend-request-{{ request_info.request_id }}">
+                <div class="col-md-2">
+                    <img src="/static/image/{% if request_info.user.pic %}{{ request_info.user.pic }}{% else %}kungfupanda.jpg{% endif %}" class="info img-responsive img-thumbnail">
+                </div>
+                <div class="col-md-10">
+                    <h1 style="font-size:70px">{{ request_info.user.user.username }}</h1>
+                    <p class="info" style="font-size:50px">Email: {{ request_info.user.user.email }}</p>
+                    <p class="info" style="font-size:50px">Request Date: {{ request_info.request_date }}</p>
+                    <div class="col-md-2">
+                        <button data-request-id="{{ request_info.request_id }}" onclick="handleFriendRequest('{{ request_info.request_id }}', 'accept')" class="btn btn-success btn-block accept-btn">Accept</button>
+                        <button data-request-id="{{ request_info.request_id }}" onclick="handleFriendRequest('{{ request_info.request_id }}', 'decline')" class="btn btn-danger btn-block decline-btn">Decline</button>
+                    </div>
+                </div>
+            </div>
+            <hr>
+        {% endfor %}
+    </div>
+
+    <script>
+        function handleFriendRequest(requestId, action) {
+            // AJAX 请求处理好友请求
+            $.ajax({
+                type: "POST",
+                url: "/handle_friend_request",
+                data: {
+                    "request_id": requestId,
+                    "action": action,
+                    "csrfmiddlewaretoken": "{{ csrf_token }}",
+                },
+                success: function (response) {
+                    // 处理成功的回调
+                    alert(response.message);
+                    // 刷新页面或者更新UI
+                    location.reload();
+                },
+                error: function (error) {
+                    // 处理错误的回调
+                    console.log(error);
+                }
+            });
+        }
+
+        // 点击 Accept 按钮时的事件
+        $(".accept-btn").click(function () {
+            var requestId = $(this).data("request-id");
+            console.log("Request ID:", requestId);
+            handleFriendRequest(requestId, 'accept');
+        });
+
+        // 点击 Decline 按钮时的事件
+        $(".decline-btn").click(function () {
+            var requestId = $(this).data("request-id");
+            console.log("Request ID:", requestId);
+            handleFriendRequest(requestId, 'decline');
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Status{% endblock %}
+{% block status %}class="active"{% endblock %}
+{% block searchword %}value="{{ keyword }}"{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% for status in statuses %}
+            <div class="row">
+                <div class="col-md-2">
+                    <img src="/static/image/{{ status.user.pic }}" class="img-responsive img-thumbnail">
+                </div>
+                <div class="col-md-10">
+                    <h1 style="font-size:70px">{{ status.user }}</h1>
+                    <p style="font-size:50px">{{ status.text }}</p>
+                    {% if status.pics %}
+                        <div class="col-md-8">
+                            <img src="/static/image/{{ status.pics }}" class="img-responsive">
+                        </div>
+                    {% endif %}
+                    <div class="col-md-12">
+                        <p style="float:left; color:gray; font-size:30px">{{ status.pub_time|date:"m-d-Y H:i:s"}}</p>
+                        <!-- 添加好友请求按钮 -->
+                        <button style="float:right; background-color: rgba(50, 50, 50, 0.8); color: white;" class="btn btn-default send-friend-request-btn" data-user-id="{{ status.user.id }}">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 发送好友请求
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <hr>
+        {% endfor %}
+    </div>
+    <!---分页器--->
+    <div>
+        <nav aria-label="Page navigation" align="center">
+            <ul class="pagination pagination-lg">
+                {% if statuses.has_previous %}
+                    <li>
+                        <a href="?page={{ statuses.previous_page_number }}{% if keyword %}&keyword={{ keyword }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+                {% for num in page_range %}
+                    <!---高亮显示当前标签页-->
+                    <li {% ifequal num page %}class="active"{% endifequal %}>
+                        <a href="?page={{ num }}{% if keyword %}&keyword={{ keyword }}{% endif %}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+                {% if statuses.has_next %}
+                    <li>
+                        <a href="?page={{ statuses.next_page_number }}{% if keyword %}&keyword={{ keyword }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+    <script>
+        // 绑定点击事件
+        $(".send-friend-request-btn").click(function () {
+            // 获取用户ID
+            var userId = $(this).data("user-id");
+    
+            // 调用发送好友请求的函数
+            sendFriendRequest(userId);
+        });
+    
+        // 发送好友请求的函数
+        function sendFriendRequest(userId) {
+            // 发送 AJAX 请求到后端，告知要发送好友请求
+            $.ajax({
+                type: "POST",
+                // 注意这里的 URL 应该根据你的路由配置来修改
+                url: `/send_friend_request/${userId}/`,  // 此处的路径应该与你的URL配置中的路径一致
+                data: {
+                    "csrfmiddlewaretoken": "{{ csrf_token }}",
+                },
+                success: function (response) {
+                    // 处理成功的回调，可以根据 response 进行提示或其他操作
+                    alert(response.message);
+    
+                    // 根据后端返回的信息判断是否需要进行页面重定向
+                    if (response.redirect) {
+                        window.location.href = response.redirect;
+                    }
+                },
+                error: function (error) {
+                    // 处理错误的回调
+                    console.log(error);
+                }
+            });
+        }
+    </script>
+
+
+{% endblock %}
